@@ -115,10 +115,9 @@ if __name__ == "__main__":
     input_folder = BASE_DIR / "input_data"
     output_dir = BASE_DIR / "output"
     os.makedirs(output_dir, exist_ok=True)
-    
+    created_files = []
     plots_dir = output_dir / "plots"
     os.makedirs(plots_dir, exist_ok=True)
-    created_files = []
     output_cleaned_path = BASE_DIR / "cleaned_data.csv"
     output_reasons_path = output_dir / "anomaly_reasons.csv"
     output_anomalies_path = output_dir / "anomalies.csv"
@@ -209,7 +208,11 @@ if __name__ == "__main__":
         on=['SubjectID', 'researchdate'],
         how='left'
     )
-    df_cleaned['is_bad_day'] = df_cleaned['is_bad_day'].fillna(False)
+    df_cleaned['is_bad_day'] = (
+        df_cleaned['is_bad_day']
+        .fillna(False)
+        .astype(bool)
+    )
     
     # Зануляем вес респондента целиком за этот день
     df_cleaned['Weight'] = np.where(df_cleaned['is_bad_day'] == True, 0.0, df_cleaned['Weight'])
@@ -272,22 +275,46 @@ if __name__ == "__main__":
     
     
     # ========== ПУНКТ 8.2 ==========
-    #графики «до/после» по характеристикам респондентов: пол, возраст, регион, федеральный округ и т.д.;       
-    #for c in ["Пол", "Возраст", "Регион", "Федеральный_округ"]:
-        #plot_before_after_feature(df_old, df_cleaned, c, plots_dir / f"demo_{c}.png")
+    #графики «до/после» по характеристикам респондентов: пол, возраст, регион, федеральный округ и т.д.;   
+    """    
+    for c in ["Пол", "Возраст", "Регион", "Федеральный_округ"]:
+        out_file = plots_dir / f"demo_{c}.png"
+        plot_before_after_feature(df_old, df_cleaned, c, out_file)
+
+        if out_file.exists():
+            created_files.append(out_file)
+    """
         
     #графики «до/после» по характеристикам ресурсов: ResourceName, ResourceType, Platform, UseType;
-    #for c in ["ResourceName", "ResourceType", "Platform", "UseType"]:
-        #plot_before_after_feature(df_old, df_cleaned, c, plots_dir / f"resource_{c}.png")
+    """
+    for c in ["ResourceName", "ResourceType", "Platform", "UseType"]:
+        out_file = plots_dir / f"resource_{c}.png"
+        plot_before_after_feature(df_old, df_cleaned, c, out_file)
+
+        if out_file.exists():
+            created_files.append(out_file)
+    """
         
     #графики «до/после» по уровням категорий: CategoryNameDelivery, Category1, Category2, Category3;    
+    """
     for c in ["CategoryNameDelivery", "Category1", "Category2", "Category3"]:
-        plot_before_after_feature(df_old, df_cleaned, c, plots_dir / f"cat_{c}.png")
+        out_file = plots_dir / f"cat_{c}.png"
+        plot_before_after_feature(df_old, df_cleaned, c, out_file)
+        
+        if out_file.exists():
+            created_files.append(out_file)
+    """
         
     #таблица поисковых запросов QueryText для выбранного аномального респондента и дня;
-    #save_querytext_example(df_old, anomaly_pairs, output_dir / "querytext_example.csv")
-    #if not reasons.empty:
-        #plot_brand_before_after(df_old, df_cleaned, reasons.iloc[0]["BrandID"], plots_dir / "brand_example_before_after.png")
+    """
+    save_querytext_example(df_old, anomaly_pairs, output_dir / "querytext_example.csv")
+    if not reasons.empty:
+        out_file = plots_dir / f"brand_{c}.png"
+        plot_before_after_feature(df_old, df_cleaned, c, out_file)
+        
+        if out_file.exists():
+            created_files.append(out_file)
+    """
  
     print(" " * 50)
     print("ФИНАЛЬНЫЕ МЕТРИКИ ЭФФЕКТИВНОСТИ")
